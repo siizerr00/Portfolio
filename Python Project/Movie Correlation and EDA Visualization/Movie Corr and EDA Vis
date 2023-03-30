@@ -1,0 +1,231 @@
+#Import libraries
+
+#pandas digunakan untuk memanipulasi dan analisis data
+#seaborn digunakan visualisasi data
+#matplotlib digunakan untuk menyetel atau mengatur visualisasi data
+
+import pandas as pd
+import seaborn as sns 
+import numpy as np
+from datetime import datetime
+import re
+import datetime
+
+%matplotlib inline
+matplotlib.rcParams['figure.figsize'] = (12,8) 
+sns.set()
+
+#Syntac khusus Kaggle, jika tidak menggunakan kaggle hapus saja
+import os
+for dirname, _, filenames in os.walk('/kaggle/input'):
+    for filename in filenames:
+        print(os.path.join(dirname, filename))
+
+#Membaca file
+df = pd.read_csv('/kaggle/input/moviesdataset/New Movie.csv')
+
+df.head()
+
+#Membaca tipe data
+df.dtypes
+
+
+#Cleaning Data
+
+##change data type
+df['released'] = pd.to_datetime(df['released'])
+df.dtypes
+
+##check typo
+for col_name in ['company', 'genre', 'country']:
+    print(df[col_name].value_counts(), '')
+    
+##check missing value
+sns.heatmap(df.isnull(), cbar=False) 
+plt.title('Valores faltantes por columna y posición', fontsize = 15)
+plt.show()
+
+df = df.fillna(0)
+df.head()
+
+##Check the missing value again
+sns.heatmap(df.isnull(), cbar=False) 
+plt.title('Valores faltantes por columna y posición', fontsize = 15)
+plt.show()
+
+
+#EDA VISUALISATION
+df.describe().T
+
+##How many films released per year?
+counts = df['year'].value_counts().sort_index()
+plt.bar(counts.index, counts.values)
+plt.xlabel('Year of release')
+plt.ylabel('Number of movies')
+plt.show()
+
+##What is the oldest and the newest movie?
+Oldest = df.sort_values('released', ascending = True)
+#specify the column we want to show
+Oldest[['name', 'released']] [:10]
+
+Newest = df.sort_values("released", ascending = False)
+#specify the column we want to show
+Newest[['name', "released"]][:10]
+
+##What country most released films?
+country = df.groupby('country')['name'].count()
+country = country.sort_values(ascending = False)
+
+sns.barplot(x = country.index, y = country.values, color = 'orange')
+plt.title('Number of films release by country')
+plt.ylabel('Number of Films')
+plt.xlabel('Country')
+
+plt.xticks(rotation = 90)
+plt.show()
+
+#create a code data for shorting the data
+
+country = df.groupby('country')['name'].count()
+country = country.sort_values(ascending = False)
+top10 = country.head(10)
+
+top10
+
+#create a code data for shorting the data
+
+country = df.groupby('country')['name'].count()
+country = country.sort_values(ascending = False)
+top10 = country.head(10)
+
+sns.barplot(x = top10.index, y = top10.values, color = 'orange')
+plt.title('Number of films release by country')
+plt.ylabel('Number of Films')
+plt.xlabel('Country')
+
+plt.xticks(rotation = 45, ha = 'right')
+
+for i, count in enumerate(top10.values):
+    plt.text(i, count/2, count, ha='center', va='center', color='black', fontweight='medium')
+
+plt.show()
+
+#change data type 'company' to string
+df['company'] = df['company'].astype(str)
+
+#drop any duplication
+df['company'].drop_duplicates().sort_values(ascending=False)
+
+#normalize the similar company but has different name 
+
+df['company_normalized'] = df['company'].str.lower().replace(r'\W+', '', regex=True)
+unique_companies = df['company_normalized'].drop_duplicates().count()
+print("Number of unique companies: ", unique_companies)
+
+#Top 10 company most released film?
+#create a code data for shorting the data
+
+companies = df.groupby('company')['name'].count()
+companies = companies.sort_values(ascending = False)
+top10 = companies.head(10)
+
+top10
+
+companies = df.groupby('company')['name'].count()
+companies = companies.sort_values(ascending = False)
+top3 = companies.head(3)
+
+sns.barplot(x = top3.index, y = top3.values)
+plt.title('Companies that Often Release Films')
+plt.xlabel('Number of films')
+plt.ylabel('Company')
+plt.xticks(rotation = 90, ha = 'right')
+
+for i, count in enumerate(top3.values):
+    plt.text(1, count/2, count, ha = 'center', va = 'center', fontweight = 'medium')
+plt.show()
+
+
+
+##FIND THE CORRELATION
+
+#Sort the 'gross' from the descending value
+
+df = df.sort_values(['gross'], ascending=False)
+
+df
+
+#Check Correlation Gross and Budget
+#check the correlation parameter with visualisation
+#Set the 'budget' as x axis and
+# the 'gross' as y axis
+
+plt.scatter( x = df['budget'], y = df['gross'])
+
+plt.title('Budget VS Gross Earnings')
+
+plt.xlabel('Gross Earnings')
+
+plt.ylabel('Budget for Film')
+
+plt.show()
+
+
+df['budget'] = pd.to_numeric(df['budget'], errors = 'coerce')
+df['gross'] = pd.to_numeric(df['gross'], errors = 'coerce')
+df = df.dropna()
+
+sns.regplot(x = 'budget', y = 'gross', data = df, scatter_kws = {'color' : 'red'}, line_kws = {'color' : 'blue'})
+
+#corr is formula to show the linear correlation in 2 variabel by column 
+# 1 mean positive correlation
+# -1 mean negative correlation
+
+df.corr(method = 'pearson')
+
+#Visualising correlation the parameter to each other
+
+correlation_matrix = df.corr(method = 'pearson')
+
+sns.heatmap(correlation_matrix, annot = True)
+
+plt.title('Correlation Matrix for Numeric Features')
+
+plt.xlabel('Movie Features')
+
+plt.ylabel('Movie Features')
+
+plt.show()
+
+#Check Correlation Gross VS COmpany
+df.head()
+df_numerized = df.copy()
+
+for col_name in df.select_dtypes(include = ['object']).columns: 
+    df_numerized[col_name] = df_numerized[col_name].astype('category')
+    df_numerized[col_name] = df_numerized[col_name].cat.codes
+        
+df_numerized  
+
+correlation_matrix = df_numerized.corr()
+
+sns.heatmap(correlation_matrix, annot = True)
+
+plt.title('Correlation Matrix for Numeric Features')
+
+plt.xlabel('Movie Features')
+
+plt.ylabel('Movie Features')
+
+plt.show()
+
+#short the correlation
+sorted_pairs = corr_pairs.sort_values()
+
+sorted_pairs
+
+#short correlation with condition the value <0.5 and not equal 1
+high_corr = sorted_pairs[(sorted_pairs > 0.5) & (sorted_pairs != 1)]
+
+high_corr 
