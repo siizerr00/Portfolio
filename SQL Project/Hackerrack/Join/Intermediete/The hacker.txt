@@ -1,0 +1,74 @@
+﻿idenya adalah 
+membuat semua menjadi satu tabel agar lebih mudah di seleksi.
+
+
+ide pertama dalam ‘select’
+ingat bahwa yang akan kita pilih adalah hacker id dan nama dari tabel hacker. tabel yang diambil adalah tabel hackers, kenapa, karena nantinya tabel ini akan digabung ke banyak tabel. maka: 
+
+
+SELECT hackers.hacker_id, hackers.name
+FROM hackers
+
+
+ide kedua kita akan menggabungkan tabel-tabel yang ada
+
+
+JOIN submissions ON hackers.hacker_id = submissions.hacker_id
+JOIN challenges ON submissions.challenge_id = challenges.challenge_id
+JOIN difficulty ON challenges.difficulty_level = difficulty.difficulty_level
+
+
+yang pertama kita menggabungkan tabel hackers dengan submission, maka perintahnya adalah join tabel submission ke tabel hacker yang hacker idnya sama. 
+kedua kita menggabungkan tabel challenges dengan tabel submission, maka perintahnya adalah join tabel challenges ke tabel submissions yang challenge id nya sama.
+ketiga kita menggabungkan tabel difficulty dengan challenge, maka perintahnya adalah join tabel difficulty ke challenges yang difficulty level nya sama
+
+
+jika kita memilih semua tabel (bukan hackers.hacker_id, hackers.name) maka outputnya akan seperti ini 
+  
+
+
+
+ide ketiga kita masuk ke sistem seleksi. seleksi pertama adalah kita harus tahu hacker mana yang punya score penuh. caranya adalah dengan menyamakan submission score dengan difficulty score.
+
+
+where submissions.score = difficulty.score
+
+
+outputnya akan seperti ini:
+  
+
+
+
+hasilnya adalah hacker id dan nama yang telah mengumpulkan challenge. ada yang lebih dari satu challenge ada yang hanya 1 challenge. 
+
+
+ide keempat: maka kita perlu mengelompokkan hacker tersebut berdasarkan id dan namanya. 
+
+
+group by hackers.hacker_id, hackers.name
+
+
+  
+
+
+
+yeay! kita sudah mendapatkan id dan nama hacker yang mengerjakan dengan full score. Selanjutnya kita masuk ke seleksi kedua, yaitu memilih hacker yang mengerjakan lebih dari satu challenge. 
+
+
+idenya adalah kita menghitung id hacker yang lebih dari 1 muncul di tabel tersebut. karena kita tidak dapat menggunakan pengkondisian ‘where’ dua kali, maka kita menggunakan fungsi ‘having’
+
+
+having count(submissions.hacker_id)>1 
+
+
+hasilnya adalah 
+  
+
+
+
+langkah terakhir adalah mengurutkan hacker id dan nama dengan kondisi: 
+1. melakukan challenge terbanyak 
+2. jika lebih dari satu orang maka diurutkan per idnya
+
+
+order by count(submissions.hacker_id) desc, hackers.hacker_id asc
