@@ -1,0 +1,40 @@
+WITH cte_user_location AS (
+    SELECT 
+        kul.id AS location_id,
+        ku.id AS user_id,
+        ku.name,
+        ku.email,
+        ku.phone,
+        kul.address
+    FROM ku_user_location kul
+    JOIN ku_user ku ON kul.user_id = ku.id
+),
+
+cte_product_category AS (
+    SELECT 
+        p.id AS product_id,
+        p.name AS product_name,
+        GROUP_CONCAT(c.name SEPARATOR ', ') AS categories
+    FROM ku_product p
+    LEFT JOIN ku_product_category pc ON p.id = pc.product_id
+    LEFT JOIN ku_category c ON pc.category_id = c.id
+    GROUP BY p.id, p.name
+)
+
+SELECT
+    ul.user_id,
+    ul.name AS username,
+    ul.email,
+    ul.phone,
+    od.delivery_date,
+    p.product_name,
+    p.categories,
+    od.quantity,
+    ul.address,
+    SUM(od.quantity) OVER (ORDER BY od.delivery_date, ul.user_id) AS total
+FROM ku_order_detail od
+JOIN ku_order o ON od.order_id = o.id
+JOIN cte_user_location ul ON od.user_location_id = ul.location_id
+JOIN cte_product_category p ON od.product_id = p.product_id
+WHERE od.delivery_date BETWEEN '2019-09-01' AND '2019-09-30'
+ORDER BY od.delivery_date, ul.user_id;
