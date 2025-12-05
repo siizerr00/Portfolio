@@ -1,1 +1,1 @@
-
+Tools yang digunakan: python di google colab
