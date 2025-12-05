@@ -1,0 +1,13 @@
+Analisis Heatmap:
+
+Retention Month+1 berada di 35–46%, artinya setengah customer hilang setelah bulan pertama.
+Pada bulan ke-2 hingga ke-4 terlihat penurunan tajam, yang menandakan periode kritis terjadinya churn.
+Sekitar 10–15% customer bertahan hingga bulan ke-6, membentuk kelompok pengguna loyal.
+Distribusi order membentuk pola long-tail: mayoritas customer hanya order 1–2 kali, dan hanya sedikit customer yang membuat banyak transaksi.
+
+Rekomendasi Bisnis
+Pengalaman pertama cust belum cukup untuk membuat cust melakukan repeat order
+Perlu lebih aktif mengingatkan dan menarik cust sebelum hilang. Bisa menggunakan promo, notifikasi, rekomendasi produk
+Cust loyal sekitar 10-15% bisa diberi promo loyalitas, diskon khusus, atau rekomendasi yang lebih personal.
+Setiap cohort menunjukkan pola yang mirip, artinya performa produk konsisten.
+Dorong lebih banyak cust melakukan repeat order.
