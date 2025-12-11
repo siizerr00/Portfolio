@@ -9,4 +9,4 @@ join ku_order ko on ko.id = kod.order_id
 join ku_order_detail_status kods on kod.status = kods.id
 where kods.name = 'successful' and kod.delivery_date between '2025-07-01' and '2025-09-30'
 group by ko.id, kp.name
-order by 3,4 desc
+order by 4,3 desc
